@@ -1,0 +1,14 @@
+cqto ：使用%rax的符号位填充%rdx
+mulq：R[%rdx] : R[%rax] <-  S * R[%rax]
+
+x = 2^64*xh + xl,	   y = 2^64*yh + yl
+
+x*y = 2^128*xh*yh + 2^64*(xh*yl + xl*yh) + xl*yl
+两个64位数相乘一定可以用128位数表示，因此2^128*xh*yh不需要计算
+
+2-3行：将y移到%rax，用y的符号位填充%rdx，即yh == %rdx, yl == %rax
+4-5行：用x的符号位填充%rcx，即xh == %rcx, xl == %rsi
+6-8行：xh*yl + xl*yh == %rcx
+  9 行：xl * yl  高位在%rdx， 低位在%rax，x*y的低位就是%rax
+10 行：xl * yl的高位加上xh*yl + xl*yh 就是x*y128位表示的高位
+11-12行：赋值
