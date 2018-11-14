@@ -1,0 +1,18 @@
+A:
+	e1.p	 0
+	e1.y	 8
+	e2.x	 0
+	e2.next	 8
+
+B:
+	16个字节
+
+C:
+	proc:
+		movq	8(%rdi),%rax		# 从下一条语句可以看出%rax中存放的是地址，
+						  又因为有8位偏移，所以%rax中是up->e2.next
+		movq	(%rax),%rdx		# %rdx中也是地址，偏移为0，因此是up->e2.next->e1.p
+		movq	(%rdx),%rdx		# %rdx中是*(up->e2.next->e1.p)
+		sunq	8(%rax),%rdx		# 容易看出8(%rax)中是数字，偏移8位，因此是e1.y
+						  8(%rax)是up->e2.next->e1.y
+	up->e2.x = *(up->e2.next->e1.p) - up->e2.next->e1.y
